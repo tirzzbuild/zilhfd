@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KILLUA — LEXZY DEV</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0416; color: #fff;
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh; padding-bottom: 90px;
+  }
+
+  .page { display: none; padding: 16px 18px 40px; }
+  .page.active { display: block; }
+
+  .header { display: flex; align-items: center; gap: 12px; padding: 8px 0 20px; }
+  .avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #b366ff, #4a0d8c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; box-shadow: 0 0 14px rgba(139,61,255,0.7);
+  }
+  .avatar.cyan { background: radial-gradient(circle at 30% 30%, #4de6ff, #0d4a6a); box-shadow: 0 0 14px rgba(77,230,255,0.7); }
+  .avatar.gold { background: radial-gradient(circle at 30% 30%, #ffc83c, #8a4a0d); box-shadow: 0 0 14px rgba(255,200,60,0.7); }
+  .greet { font-size: 10px; letter-spacing: 1.5px; color: #b366ff; font-weight: 600; }
+  .greet.cyan { color: #4de6ff; }
+  .greet.gold { color: #ffc83c; }
+  .name { font-size: 17px; font-weight: 800; letter-spacing: 1px; margin-top: 2px; }
+
+  .main-card {
+    padding: 18px; border-radius: 22px;
+    background: linear-gradient(135deg, #2a0d4d, #1a0633, #12042a);
+    border: 1px solid rgba(179,102,255,0.25);
+    box-shadow: 0 8px 30px rgba(139,61,255,0.25);
+    margin-bottom: 22px;
+  }
+  .main-card.gold {
+    background: linear-gradient(135deg, #4a350d, #2a1a06, #1a0f04);
+    border-color: rgba(255,200,60,0.3);
+    box-shadow: 0 8px 30px rgba(255,200,60,0.25);
+  }
+  .online-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    color: #b366ff; border: 1px solid rgba(179,102,255,0.5);
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(139,61,255,0.1);
+  }
+  .online-badge.gold { color: #ffc83c; border-color: rgba(255,200,60,0.5); background: rgba(255,200,60,0.1); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #b366ff; box-shadow: 0 0 6px #b366ff; }
+  .online-badge.gold .dot { background: #ffc83c; box-shadow: 0 0 6px #ffc83c; }
+  .session-label { font-size: 10px; letter-spacing: 1.5px; color: #8a7aa8; margin-top: 16px; font-weight: 600; }
+  .session-ver { font-size: 30px; font-weight: 800; letter-spacing: 1px; margin-top: 2px; text-shadow: 0 0 20px rgba(179,102,255,0.5); }
+  .main-card.gold .session-ver { text-shadow: 0 0 20px rgba(255,200,60,0.5); }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 18px; }
+  .stat { background: rgba(10,4,22,0.7); border: 1px solid rgba(139,61,255,0.2); border-radius: 12px; padding: 10px 8px; }
+  .main-card.gold .stat { border-color: rgba(255,200,60,0.2); }
+  .stat .lbl { font-size: 9px; color: #8a7aa8; letter-spacing: 1px; font-weight: 600; }
+  .stat .val { font-size: 17px; font-weight: 800; margin-top: 4px; }
+  .val.blue { color: #4da6ff; }
+  .val.pink { color: #ff2fa0; }
+  .val.green { color: #4dff88; }
+  .val.gold { color: #ffc83c; }
+
+  .section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 800; letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .section-title::before {
+    content: ''; width: 3px; height: 14px; border-radius: 2px;
+    background: linear-gradient(180deg, #b366ff, #ff2fa0);
+    box-shadow: 0 0 8px #8b3dff;
+  }
+  .section-title.cyan::before { background: linear-gradient(180deg, #4de6ff, #8b3dff); box-shadow: 0 0 8px #4de6ff; }
+  .section-title.gold::before { background: linear-gradient(180deg, #ffc83c, #ff8a3c); box-shadow: 0 0 8px #ffc83c; }
+
+  /* ===== STORY BAR (KAYAK WA) ===== */
+  .story-bar {
+    display: flex; gap: 14px; overflow-x: auto;
+    padding-bottom: 10px; margin-bottom: 22px;
+  }
+  .story-bar::-webkit-scrollbar { display: none; }
+
+  .story-item {
+    flex: 0 0 auto; width: 74px;
+    text-align: center; cursor: pointer;
+  }
+  .story-ring {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #b366ff, #ff2fa0, #ffc83c);
+    position: relative;
+    margin: 0 auto 6px;
+  }
+  .story-ring.seen { background: #2a1540; }
+  .story-ring.add { background: rgba(139,61,255,0.3); }
+  .story-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: #0a0416;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    border: 2px solid #0a0416;
+    overflow: hidden;
+    position: relative;
+  }
+  .story-inner img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .story-name {
+    font-size: 10px; font-weight: 700;
+    color: #d8c8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 74px;
+  }
+  .story-ring.add .story-inner {
+    background: linear-gradient(135deg, #2a0d4d, #1a0633);
+    color: #b366ff;
+    font-size: 28px;
+  }
+
+  /* ===== STORY VIEWER (FULLSCREEN) ===== */
+  .story-viewer {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 999;
+    display: none;
+    flex-direction: column;
+  }
+  .story-viewer.open { display: flex; }
+  .story-progress {
+    display: flex; gap: 4px;
+    padding: 12px 12px 0;
+  }
+  .story-progress .bar {
+    flex: 1; height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .story-progress .bar.active .fill {
+    height: 100%;
+    background: #fff;
+    animation: storyFill 5s linear forwards;
+  }
+  @keyframes storyFill {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+  .story-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+  }
+  .story-head .av {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #b366ff, #4a0d8c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .story-head .info { flex: 1; }
+  .story-head .u { font-size: 13px; font-weight: 800; }
+  .story-head .t { font-size: 10px; color: #8a7aa8; margin-top: 2px; }
+  .story-head .close {
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px 10px;
+  }
+  .story-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+  }
+  .story-content .text {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    padding: 30px;
+    word-break: break-word;
+  }
+
+  /* ===== ADMIN BUAT STORY ===== */
+  .story-form {
+    background: #150828;
+    border: 1px solid rgba(139,61,255,0.3);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .story-form textarea {
+    width: 100%; min-height: 90px;
+    background: #050505;
+    border: 1px solid rgba(139,61,255,0.4);
+    color: #fff;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 13px;
+    border-radius: 10px;
+    outline: none;
+    resize: vertical;
+  }
+  .bg-picker {
+    display: flex; gap: 8px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .bg-pick {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.15);
+    transition: 0.2s;
+  }
+  .bg-pick.active {
+    border-color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  }
+  .story-btn {
+    width: 100%; padding: 12px;
+    background: linear-gradient(90deg, #8b3dff, #ff2fa0);
+    border: none; color: #fff;
+    font-family: inherit;
+    font-size: 13px; font-weight: 800;
+    letter-spacing: 1.5px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(139,61,255,0.5);
+  }
+  .story-btn:active { transform: scale(0.97); }
+  .story-del {
+    width: 100%; padding: 10px;
+    background: rgba(255,51,68,0.15);
+    border: 1px solid rgba(255,51,68,0.5);
+    color: #ff3344;
+    font-family: inherit;
+    font-size: 12px; font-weight: 800;
+    letter-spacing: 1.5px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .story-del:active { transform: scale(0.97); }
+
+  .creator-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 22px; }
+  .creator-list::-webkit-scrollbar { display: none; }
+  .creator-chip {
+    flex: 0 0 auto; width: 110px; padding: 12px 8px; border-radius: 16px;
+    background: linear-gradient(135deg, #0d3a4a, #1a0633);
+    border: 1px solid rgba(77,230,255,0.35);
+    box-shadow: 0 4px 14px rgba(77,230,255,0.15);
+    text-align: center; text-decoration: none; display: block; color: #fff;
+    cursor: pointer;
+  }
+  .cc-avatar {
+    width: 54px; height: 54px; margin: 0 auto 8px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #4de6ff, #0d4a6a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; box-shadow: 0 0 14px rgba(77,230,255,0.7);
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .cc-name { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cc-role { font-size: 9px; color: #4de6ff; letter-spacing: 1px; margin-top: 2px; font-weight: 700; }
+
+  .collab-list { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 22px; }
+  .collab-list::-webkit-scrollbar { display: none; }
+  .collab-card {
+    flex: 0 0 200px; padding: 16px; border-radius: 18px;
+    background: linear-gradient(135deg, #2a0d4d, #1a0633);
+    border: 1px dashed rgba(179,102,255,0.5);
+    position: relative; overflow: hidden; text-align: center;
+  }
+  .collab-card::before {
+    content: 'SOON'; position: absolute; top: 8px; right: 8px;
+    font-size: 8px; font-weight: 800; letter-spacing: 1.5px;
+    padding: 3px 8px; border-radius: 20px;
+    background: linear-gradient(90deg, #8b3dff, #ff2fa0);
+    color: #fff; box-shadow: 0 0 10px rgba(255,47,160,0.6);
+  }
+  .collab-ico {
+    width: 60px; height: 60px; margin: 0 auto 10px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #b366ff, #4a0d8c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; box-shadow: 0 0 18px rgba(139,61,255,0.7);
+    filter: grayscale(0.4); opacity: 0.85;
+  }
+  .collab-name { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .collab-desc { font-size: 10px; color: #8a7aa8; line-height: 1.4; }
+  .collab-status {
+    display: inline-block; margin-top: 10px;
+    font-size: 9px; font-weight: 800; letter-spacing: 1px;
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(255,200,60,0.12);
+    border: 1px solid rgba(255,200,60,0.5);
+    color: #ffc83c;
+  }
+
+  .coming-big {
+    text-align: center; padding: 22px 18px; border-radius: 22px;
+    background: linear-gradient(135deg, #2a1a06, #1a0f04);
+    border: 1px dashed rgba(255,200,60,0.4);
+    box-shadow: 0 8px 30px rgba(255,200,60,0.15);
+    margin-bottom: 22px;
+  }
+  .coming-big .cb-ico { font-size: 44px; margin-bottom: 8px; }
+  .coming-big .cb-title { font-size: 14px; font-weight: 800; letter-spacing: 1px; color: #ffc83c; }
+  .coming-big .cb-text { font-size: 11px; color: #8a7aa8; margin-top: 6px; line-height: 1.5; }
+  .coming-big .cb-badge {
+    display: inline-block; margin-top: 12px;
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+    padding: 6px 14px; border-radius: 20px;
+    background: linear-gradient(90deg, #ffc83c, #ff8a3c);
+    color: #1a0633;
+  }
+
+  .tg-card {
+    padding: 18px; border-radius: 22px;
+    background: linear-gradient(135deg, #0d3a6a, #1a2a5a, #0a1a3a);
+    border: 1px solid rgba(77,168,255,0.4);
+    box-shadow: 0 8px 30px rgba(77,168,255,0.25);
+    margin-bottom: 22px;
+    display: flex; align-items: center; gap: 14px;
+    text-decoration: none; color: #fff;
+    position: relative; overflow: hidden;
+    cursor: pointer;
+  }
+  .tg-card::before {
+    content: ''; position: absolute;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(77,168,255,0.35), transparent 70%);
+    top: -60px; right: -60px; pointer-events: none;
+  }
+  .tg-card:active { transform: scale(0.98); }
+  .tg-ico {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #4da6ff, #0d4a8c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 0 20px rgba(77,168,255,0.8);
+    flex-shrink: 0; position: relative; z-index: 1;
+  }
+  .tg-info { flex: 1; position: relative; z-index: 1; min-width: 0; }
+  .tg-label { font-size: 9px; letter-spacing: 2px; color: #4da6ff; font-weight: 800; }
+  .tg-title { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; margin-top: 3px; }
+  .tg-user { font-size: 11px; color: #8a7aa8; margin-top: 2px; }
+  .tg-btn {
+    padding: 8px 12px; border-radius: 10px;
+    background: linear-gradient(90deg, #4da6ff, #8b3dff);
+    color: #fff; font-size: 10px; font-weight: 800;
+    letter-spacing: 1px; position: relative; z-index: 1; flex-shrink: 0;
+  }
+
+  .carousel { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; }
+  .carousel::-webkit-scrollbar { display: none; }
+  .news-card {
+    flex: 0 0 82%; height: 160px; border-radius: 18px;
+    background: linear-gradient(135deg, #1a0633, #2a0d4d);
+    border: 1px solid rgba(179,102,255,0.2);
+    position: relative; overflow: hidden;
+  }
+  .news-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 70px; opacity: .9; }
+  .news-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 14px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+  }
+  .news-overlay h3 { font-size: 17px; font-weight: 800; letter-spacing: 0.5px; }
+  .news-overlay p { font-size: 10px; color: #8a7aa8; margin-top: 3px; letter-spacing: 0.5px; }
+  .dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 22px; }
+  .dots span { width: 22px; height: 4px; border-radius: 3px; background: #2a1540; }
+  .dots span.active { background: linear-gradient(90deg, #8b3dff, #ff2fa0); box-shadow: 0 0 8px #8b3dff; }
+
+  .account-card {
+    background: #150828; border: 1px solid rgba(139,61,255,0.2);
+    border-radius: 18px; padding: 14px 16px; margin-bottom: 18px;
+  }
+  .account-card.cyan { border-color: rgba(77,230,255,0.25); }
+  .account-card.gold { border-color: rgba(255,200,60,0.25); }
+  .account-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; padding: 8px 0;
+    border-bottom: 1px solid rgba(139,61,255,0.1);
+  }
+  .account-card.cyan .account-row { border-bottom-color: rgba(77,230,255,0.1); }
+  .account-card.gold .account-row { border-bottom-color: rgba(255,200,60,0.1); }
+  .account-row:last-child { border-bottom: none; }
+  .account-row .k { color: #8a7aa8; letter-spacing: 0.5px; }
+  .account-row .v { font-weight: 700; }
+  .vip-badge { background: linear-gradient(90deg, #8b3dff, #ff2fa0); padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+  .creator-pill { background: linear-gradient(90deg, #4de6ff, #b366ff); padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #001a33; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 11px; letter-spacing: 1px; color: #8a7aa8; margin-bottom: 6px; font-weight: 700; }
+  .form-group input, .form-group select {
+    width: 100%; background: #050505;
+    border: 1px solid rgba(139,61,255,0.4);
+    color: #fff; padding: 12px; font-family: inherit;
+    font-size: 13px; border-radius: 10px; outline: none;
+  }
+  .btn-exec {
+    width: 100%; padding: 14px;
+    background: linear-gradient(90deg, #8b3dff, #ff2fa0);
+    border: none; color: #fff; font-family: inherit;
+    font-size: 14px; font-weight: 800; letter-spacing: 2px;
+    border-radius: 12px; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(139,61,255,0.5);
+    text-decoration: none; display: block; text-align: center;
+  }
+  .log-box {
+    border: 1px dashed rgba(139,61,255,0.4);
+    border-radius: 12px; padding: 12px;
+    min-height: 120px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px; background: #06020f;
+    line-height: 1.5; color: #b366ff;
+  }
+
+  .profile-hero {
+    padding: 24px 18px; border-radius: 22px;
+    background: linear-gradient(135deg, #2a0d4d, #1a0633, #12042a);
+    border: 1px solid rgba(179,102,255,0.25);
+    box-shadow: 0 8px 30px rgba(139,61,255,0.3);
+    text-align: center; margin-bottom: 18px;
+  }
+  .profile-hero.cyan {
+    background: linear-gradient(135deg, #0d3a4a, #1a0633, #2a0d4d);
+    border-color: rgba(77,230,255,0.35);
+    box-shadow: 0 8px 30px rgba(77,230,255,0.25);
+  }
+  .profile-avatar {
+    width: 90px; height: 90px; margin: 0 auto; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #b366ff, #4a0d8c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px; box-shadow: 0 0 25px rgba(139,61,255,0.9);
+    border: 3px solid rgba(255,255,255,0.15);
+  }
+  .profile-avatar.cyan { background: radial-gradient(circle at 30% 30%, #4de6ff, #0d4a6a); box-shadow: 0 0 25px rgba(77,230,255,0.9); }
+  .profile-name { font-size: 22px; font-weight: 800; letter-spacing: 1px; margin-top: 14px; }
+  .profile-name.cyan { background: linear-gradient(90deg, #4de6ff, #b366ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .profile-role { font-size: 11px; letter-spacing: 2px; color: #b366ff; margin-top: 4px; font-weight: 700; }
+  .profile-role.cyan { color: #4de6ff; }
+  .profile-badges { display: flex; justify-content: center; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .p-badge {
+    font-size: 9px; font-weight: 800; letter-spacing: 1px;
+    padding: 4px 10px; border-radius: 20px;
+    border: 1px solid rgba(179,102,255,0.5);
+    background: rgba(139,61,255,0.15); color: #b366ff;
+  }
+  .p-badge.gold { border-color: rgba(255,200,60,0.6); background: rgba(255,200,60,0.12); color: #ffc83c; }
+  .p-badge.cyan { border-color: rgba(77,230,255,0.6); background: rgba(77,230,255,0.12); color: #4de6ff; }
+  .p-badge.pink { border-color: rgba(255,47,160,0.6); background: rgba(255,47,160,0.12); color: #ff2fa0; }
+
+  .profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+  .p-stat { background: #150828; border: 1px solid rgba(139,61,255,0.2); border-radius: 14px; padding: 12px 8px; text-align: center; }
+  .p-stat .num { font-size: 20px; font-weight: 800; text-shadow: 0 0 8px rgba(179,102,255,0.6); }
+  .p-stat .lbl { font-size: 9px; color: #8a7aa8; letter-spacing: 1px; margin-top: 3px; font-weight: 600; }
+
+  .bio-box { background: #150828; border: 1px solid rgba(139,61,255,0.2); border-radius: 16px; padding: 14px 16px; margin-bottom: 18px; }
+  .bio-title { font-size: 10px; color: #8a7aa8; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 8px; }
+  .bio-text { font-size: 12px; line-height: 1.6; color: #d8c8f0; }
+
+  .btn-back {
+    display: inline-block; text-decoration: none;
+    padding: 8px 14px; border-radius: 10px;
+    background: #150828; border: 1px solid rgba(139,61,255,0.3);
+    color: #b366ff; font-size: 11px; font-weight: 800;
+    letter-spacing: 1px; margin-bottom: 14px; cursor: pointer;
+  }
+
+  .vip-banner {
+    padding: 22px 18px; border-radius: 22px;
+    background: linear-gradient(135deg, #4a0d8c, #2a0d4d, #1a0633);
+    border: 1px solid rgba(255,200,60,0.4);
+    box-shadow: 0 8px 30px rgba(255,200,60,0.25);
+    text-align: center; margin-bottom: 20px;
+  }
+  .vip-crown { font-size: 52px; filter: drop-shadow(0 0 20px rgba(255,200,60,0.9)); }
+  .vip-title {
+    font-size: 22px; font-weight: 800; letter-spacing: 2px; margin-top: 8px;
+    background: linear-gradient(90deg, #ffc83c, #ff2fa0, #b366ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .vip-sub { font-size: 11px; letter-spacing: 1px; color: #8a7aa8; margin-top: 6px; }
+
+  .paket { background: #150828; border: 1.5px solid rgba(139,61,255,0.25); border-radius: 18px; padding: 16px; margin-bottom: 12px; position: relative; }
+  .paket.populer { border-color: #ffc83c; box-shadow: 0 0 20px rgba(255,200,60,0.3); }
+  .paket.populer::after {
+    content: 'POPULER'; position: absolute; top: -10px; right: 14px;
+    font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+    padding: 3px 10px; border-radius: 20px;
+    background: linear-gradient(90deg, #ffc83c, #ff8a3c);
+    color: #1a0633;
+  }
+  .paket-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .paket-name { font-size: 16px; font-weight: 800; letter-spacing: 1px; }
+  .paket-name.gold { color: #ffc83c; }
+  .paket-name.pink { color: #ff2fa0; }
+  .paket-name.purple { color: #b366ff; }
+  .paket-price .harga { font-size: 18px; font-weight: 800; color: #b366ff; text-align: right; }
+  .paket-price .durasi { font-size: 10px; color: #8a7aa8; margin-top: 2px; text-align: right; }
+  .paket-fitur { list-style: none; margin: 12px 0; }
+  .paket-fitur li { font-size: 11px; color: #d8c8f0; padding: 5px 0 5px 20px; position: relative; line-height: 1.4; }
+  .paket-fitur li::before { content: '✓'; position: absolute; left: 0; color: #4dff88; font-weight: 800; }
+  .paket-fitur li.no { color: #5a4a70; }
+  .paket-fitur li.no::before { content: '✕'; color: #ff3344; }
+  .btn-beli {
+    display: block; width: 100%; padding: 11px; text-align: center;
+    border-radius: 10px; font-size: 12px; font-weight: 800; letter-spacing: 1.5px;
+    border: 2px solid #8b3dff; background: transparent; color: #b366ff;
+    text-decoration: none; cursor: pointer;
+  }
+  .btn-beli.gold { border-color: #ffc83c; background: linear-gradient(90deg, #ffc83c, #ff8a3c); color: #1a0633; }
+
+  .vip-info { background: #150828; border: 1px solid rgba(139,61,255,0.2); border-radius: 16px; padding: 14px 16px; margin-bottom: 20px; }
+  .vip-info .info-title { font-size: 10px; color: #8a7aa8; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 8px; }
+  .vip-info .info-text { font-size: 11px; line-height: 1.7; color: #d8c8f0; }
+  .vip-info .info-text b { color: #b366ff; }
+
+  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .admin-stat { background: #150828; border: 1px solid rgba(255,200,60,0.25); border-radius: 16px; padding: 14px; }
+  .admin-stat .a-ico { font-size: 22px; }
+  .admin-stat .a-val { font-size: 24px; font-weight: 800; margin-top: 6px; color: #ffc83c; text-shadow: 0 0 10px rgba(255,200,60,0.5); }
+  .admin-stat .a-lbl { font-size: 9px; color: #8a7aa8; letter-spacing: 1px; margin-top: 2px; font-weight: 600; }
+
+  .admin-menu { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .admin-menu-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    background: #150828; border: 1px solid rgba(255,200,60,0.2);
+    border-radius: 14px; text-decoration: none; color: #fff;
+  }
+  .admin-menu-item .mi-ico {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,200,60,0.25), rgba(255,138,60,0.15));
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .admin-menu-item .mi-text { flex: 1; }
+  .admin-menu-item .mi-title { font-size: 13px; font-weight: 800; }
+  .admin-menu-item .mi-desc { font-size: 10px; color: #8a7aa8; margin-top: 2px; }
+  .admin-menu-item .mi-arrow { color: #8a7aa8; font-size: 14px; }
+
+  .table-user { background: #150828; border: 1px solid rgba(255,200,60,0.2); border-radius: 16px; padding: 4px 0; overflow: hidden; }
+  .user-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid rgba(255,200,60,0.08); }
+  .user-row:last-child { border-bottom: none; }
+  .u-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #b366ff, #4a0d8c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .u-info { flex: 1; }
+  .u-name { font-size: 13px; font-weight: 800; }
+  .u-meta { font-size: 10px; color: #8a7aa8; margin-top: 2px; }
+  .u-status { font-size: 9px; padding: 3px 8px; border-radius: 10px; font-weight: 800; letter-spacing: 0.5px; }
+  .u-status.aktif { background: rgba(77,255,136,0.15); color: #4dff88; border: 1px solid rgba(77,255,136,0.4); }
+  .u-status.pending { background: rgba(255,200,60,0.15); color: #ffc83c; border: 1px solid rgba(255,200,60,0.4); }
+
+  .music-btn {
+    position: fixed; bottom: 90px; right: 16px;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: linear-gradient(135deg, #8b3dff, #ff2fa0);
+    border: 2px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(139,61,255,0.6);
+    z-index: 60; transition: 0.2s;
+  }
+  .music-btn:active { transform: scale(0.92); }
+  .music-btn.playing { animation: musicPulse 1.5s infinite; }
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,47,160,0.9), 0 6px 20px rgba(139,61,255,0.6); }
+    50% { box-shadow: 0 0 30px rgba(255,47,160,1), 0 6px 25px rgba(139,61,255,0.8); }
+  }
+  .music-btn .bars { display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+  .music-btn .bars span { width: 3px; background: #fff; border-radius: 2px; animation: barBounce 0.8s infinite ease-in-out; }
+  .music-btn .bars span:nth-child(1) { animation-delay: 0s; height: 8px; }
+  .music-btn .bars span:nth-child(2) { animation-delay: 0.15s; height: 16px; }
+  .music-btn .bars span:nth-child(3) { animation-delay: 0.3s; height: 12px; }
+  .music-btn .bars span:nth-child(4) { animation-delay: 0.45s; height: 14px; }
+  @keyframes barBounce {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+  .music-btn.paused .bars span { animation-play-state: paused; opacity: 0.4; }
+
+  .bottom-nav {
+    position: fixed; bottom: 14px;
+    left: 50%; transform: translateX(-50%);
+    width: calc(100% - 32px); max-width: 420px;
+    background: rgba(15,6,30,0.95);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(139,61,255,0.3);
+    border-radius: 22px;
+    display: flex; justify-content: space-around;
+    padding: 10px 6px;
+    box-shadow: 0 10px 30px rgba(139,61,255,0.3);
+    z-index: 50;
+  }
+  .nav-item {
+    flex: 1; text-align: center;
+    font-size: 9px; letter-spacing: 1px;
+    color: #8a7aa8; font-weight: 700;
+    text-decoration: none; padding: 6px 0;
+    transition: 0.2s; cursor: pointer;
+  }
+  .nav-item .ico { display: block; font-size: 18px; margin-bottom: 3px; }
+  .nav-item.crown { color: #ffc83c; }
+  .nav-item.active { color: #b366ff; text-shadow: 0 0 10px #b366ff; }
+  .nav-item.crown.active { color: #ffc83c; text-shadow: 0 0 14px #ffc83c; }
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<div class="page active" id="home">
+  <div class="header">
+    <div class="avatar">⚡</div>
+    <div>
+      <div class="greet">WELCOME BACK</div>
+      <div class="name">KILLUA</div>
+    </div>
+  </div>
+
+  <div class="main-card">
+    <span class="online-badge"><span class="dot"></span>SYSTEM ONLINE</span>
+    <div class="session-label">CURRENT SESSION</div>
+    <div class="session-ver">V1.00</div>
+    <div class="stats">
+      <div class="stat"><div class="lbl">USERS</div><div class="val blue">0</div></div>
+      <div class="stat"><div class="lbl">PING</div><div class="val pink">--</div></div>
+      <div class="stat"><div class="lbl">EXP</div><div class="val green">0D</div></div>
+    </div>
+  </div>
+
+  <div class="section-title cyan">STORY</div>
+  <div class="story-bar" id="storyBar">
+    <!-- Story di-render oleh JS -->
+  </div>
+
+  <div class="section-title cyan">CREATORS</div>
+  <div class="creator-list">
+    <a class="creator-chip" data-page="creator-lexzy">
+      <div class="cc-avatar">👑</div>
+      <div class="cc-name">LEXZY DEV</div>
+      <div class="cc-role">FOUNDER</div>
+    </a>
+    <a class="creator-chip" data-page="creator-killua">
+      <div class="cc-avatar">⚡</div>
+      <div class="cc-name">KILLUA</div>
+      <div class="cc-role">CO-CREATOR</div>
+    </a>
+    <a class="creator-chip" data-page="creator-zero">
+      <div class="cc-avatar">🛡️</div>
+      <div class="cc-name">ZERO X</div>
+      <div class="cc-role">CONTRIBUTOR</div>
+    </a>
+  </div>
+
+  <div class="section-title cyan">COMING SOON · COLLABORATION</div>
+  <div class="collab-list">
+    <div class="collab-card">
+      <div class="collab-ico">🤝</div>
+      <div class="collab-name">COLLAB #1</div>
+      <div class="collab-desc">Segera diumumkan</div>
+      <div class="collab-status">⏳ SOON</div>
+    </div>
+    <div class="collab-card">
+      <div class="collab-ico">🔥</div>
+      <div class="collab-name">COLLAB #2</div>
+      <div class="collab-desc">Segera diumumkan</div>
+      <div class="collab-status">⏳ SOON</div>
+    </div>
+    <div class="collab-card">
+      <div class="collab-ico">💎</div>
+      <div class="collab-name">COLLAB #3</div>
+      <div class="collab-desc">Segera diumumkan</div>
+      <div class="collab-status">⏳ SOON</div>
+    </div>
+    <div class="collab-card">
+      <div class="collab-ico">⭐</div>
+      <div class="collab-name">COLLAB #4</div>
+      <div class="collab-desc">Segera diumumkan</div>
+      <div class="collab-status">⏳ SOON</div>
+    </div>
+  </div>
+
+  <div class="coming-big">
+    <div class="cb-ico">🚀</div>
+    <div class="cb-title">FITUR BARU SEGERA HADIR</div>
+    <div class="cb-text">Kami sedang menyiapkan kolaborasi eksklusif untuk kamu. Stay tuned!</div>
+    <div class="cb-badge">SOON</div>
+  </div>
+
+  <div class="section-title">LATEST NEWS</div>
+  <div class="carousel">
+    <div class="news-card">
+      <div class="news-inner" style="background:linear-gradient(135deg,#2a0d4d,#4a0d8c);">⚡</div>
+      <div class="news-overlay"><h3>Killua</h3><p>© DEVELOPED BY LEXZY DEV</p></div>
+    </div>
+    <div class="news-card">
+      <div class="news-inner" style="background:linear-gradient(135deg,#0d1a4d,#0d4a8c);">👤</div>
+      <div class="news-overlay"><h3>Lexzy Dev</h3><p>© CREATOR & FOUNDER</p></div>
+    </div>
+  </div>
+  <div class="dots"><span class="active"></span><span></span><span></span></div>
+
+  <div class="section-title">ACCOUNT INFO</div>
+  <div class="account-card">
+    <div class="account-row"><span class="k">ACCESS LEVEL</span><span class="v vip-badge">VIP</span></div>
+    <div class="account-row"><span class="k">DEVELOPER</span><span class="v" style="color:#b366ff;">LEXZY DEV</span></div>
+    <div class="account-row"><span class="k">STATUS</span><span class="v" style="color:#4dff88;">AKTIF</span></div>
+    <div class="account-row"><span class="k">MASA AKTIF</span><span class="v">30 HARI</span></div>
+  </div>
+
+  <div class="section-title cyan">CHAT ADMIN</div>
+  <a class="tg-card" href="https://t.me/Lexzy_real" target="_blank">
+    <div class="tg-ico">✈️</div>
+    <div class="tg-info">
+      <div class="tg-label">TELEGRAM</div>
+      <div class="tg-title">Lexzy Dev</div>
+      <div class="tg-user">@Lexzy_real</div>
+    </div>
+    <div class="tg-btn">CHAT</div>
+  </a>
+</div>
+
+<!-- ============ PROFIL CREATOR: LEXZY DEV ============ -->
+<div class="page" id="creator-lexzy">
+  <div class="header">
+    <div class="avatar cyan">👑</div>
+    <div>
+      <div class="greet cyan">CREATOR</div>
+      <div class="name">PROFIL</div>
+    </div>
+  </div>
+  <a class="btn-back" data-page="home">← KEMBALI</a>
+
+  <div class="profile-hero cyan">
+    <div class="profile-avatar cyan">👑</div>
+    <div class="profile-name cyan">LEXZY DEV</div>
+    <div class="profile-role cyan">FOUNDER · CREATOR</div>
+    <div class="profile-badges">
+      <span class="p-badge gold">👑 FOUNDER</span>
+      <span class="p-badge cyan">⚡ CREATOR</span>
+      <span class="p-badge">✓ VERIFIED</span>
+    </div>
+  </div>
+
+  <div class="profile-stats">
+    <div class="p-stat"><div class="num" style="color:#4de6ff;">999</div><div class="lbl">TOTAL BUG</div></div>
+    <div class="p-stat"><div class="num" style="color:#4dff88;">99%</div><div class="lbl">SUKSES</div></div>
+    <div class="p-stat"><div class="num" style="color:#ff2fa0;">1200</div><div class="lbl">FOLLOWERS</div></div>
+  </div>
+
+  <a class="tg-card" href="https://t.me/Lexzy_real" target="_blank">
+    <div class="tg-ico">✈️</div>
+    <div class="tg-info">
+      <div class="tg-label">HUBUNGI CREATOR</div>
+      <div class="tg-title">Lexzy Dev</div>
+      <div class="tg-user">@Lexzy_real</div>
+    </div>
+    <div class="tg-btn">CHAT</div>
+  </a>
+
+  <div class="section-title cyan">INFORMASI</div>
+  <div class="account-card cyan">
+    <div class="account-row"><span class="k">USERNAME</span><span class="v">@lexzydev</span></div>
+    <div class="account-row"><span class="k">ROLE</span><span class="v creator-pill">CREATOR</span></div>
+    <div class="account-row"><span class="k">STATUS</span><span class="v" style="color:#4dff88;">AKTIF</span></div>
+    <div class="account-row"><span class="k">BERGABUNG</span><span class="v">01-01-2026</span></div>
+  </div>
+
+  <div class="section-title cyan">BIO</div>
+  <div class="bio-box">
+    <div class="bio-title">TENTANG CREATOR</div>
+    <div class="bio-text">Pendiri panel Killua. Developer utama dan kreator di balik sistem ini. Fokus pada otomasi, keamanan, dan tooling.</div>
+  </div>
+</div>
+
+<!-- ============ PROFIL CREATOR: KILLUA ============ -->
+<div class="page" id="creator-killua">
+  <div class="header">
+    <div class="avatar cyan">⚡</div>
+    <div>
+      <div class="greet cyan">CREATOR</div>
+      <div class="name">PROFIL</div>
+    </div>
+  </div>
+  <a class="btn-back" data-page="home">← KEMBALI</a>
+
+  <div class="profile-hero cyan">
+    <div class="profile-avatar cyan">⚡</div>
+    <div class="profile-name cyan">KILLUA</div>
+    <div class="profile-role cyan">CO-CREATOR</div>
+    <div class="profile-badges">
+      <span class="p-badge cyan">⚡ CREATOR</span>
+      <span class="p-badge gold">👑 PREMIUM</span>
+      <span class="p-badge">✓ VERIFIED</span>
+    </div>
+  </div>
+
+  <div class="profile-stats">
+    <div class="p-stat"><div class="num" style="color:#4de6ff;">128</div><div class="lbl">TOTAL BUG</div></div>
+    <div class="p-stat"><div class="num" style="color:#4dff88;">96%</div><div class="lbl">SUKSES</div></div>
+    <div class="p-stat"><div class="num" style="color:#ff2fa0;">340</div><div class="lbl">FOLLOWERS</div></div>
+  </div>
+
+  <div class="section-title cyan">INFORMASI</div>
+  <div class="account-card cyan">
+    <div class="account-row"><span class="k">USERNAME</span><span class="v">@killua</span></div>
+    <div class="account-row"><span class="k">ROLE</span><span class="v creator-pill">CREATOR</span></div>
+    <div class="account-row"><span class="k">STATUS</span><span class="v" style="color:#4dff88;">AKTIF</span></div>
+    <div class="account-row"><span class="k">BERGABUNG</span><span class="v">15-02-2026</span></div>
+  </div>
+
+  <div class="section-title cyan">BIO</div>
+  <div class="bio-box">
+    <div class="bio-title">TENTANG CREATOR</div>
+    <div class="bio-text">Co-creator panel Killua. Fokus pada modul bug tool dan integrasi API.</div>
+  </div>
+</div>
+
+<!-- ============ PROFIL CREATOR: ZERO X ============ -->
+<div class="page" id="creator-zero">
+  <div class="header">
+    <div class="avatar cyan">🛡️</div>
+    <div>
+      <div class="greet cyan">CREATOR</div>
+      <div class="name">PROFIL</div>
+    </div>
+  </div>
+  <a class="btn-back" data-page="home">← KEMBALI</a>
+
+  <div class="profile-hero cyan">
+    <div class="profile-avatar cyan">🛡️</div>
+    <div class="profile-name cyan">ZERO X</div>
+    <div class="profile-role cyan">CONTRIBUTOR</div>
+    <div class="profile-badges">
+      <span class="p-badge">🛡️ CONTRIBUTOR</span>
+      <span class="p-badge">✓ VERIFIED</span>
+    </div>
+  </div>
+
+  <div class="profile-stats">
+    <div class="p-stat"><div class="num" style="color:#4de6ff;">64</div><div class="lbl">TOTAL BUG</div></div>
+    <div class="p-stat"><div class="num" style="color:#4dff88;">92%</div><div class="lbl">SUKSES</div></div>
+    <div class="p-stat"><div class="num" style="color:#ff2fa0;">88</div><div class="lbl">FOLLOWERS</div></div>
+  </div>
+
+  <div class="section-title cyan">INFORMASI</div>
+  <div class="account-card cyan">
+    <div class="account-row"><span class="k">USERNAME</span><span class="v">@zerox</span></div>
+    <div class="account-row"><span class="k">ROLE</span><span class="v creator-pill">CONTRIBUTOR</span></div>
+    <div class="account-row"><span class="k">STATUS</span><span class="v" style="color:#4dff88;">AKTIF</span></div>
+    <div class="account-row"><span class="k">BERGABUNG</span><span class="v">10-03-2026</span></div>
+  </div>
+
+  <div class="section-title cyan">BIO</div>
+  <div class="bio-box">
+    <div class="bio-title">TENTANG CREATOR</div>
+    <div class="bio-text">Kontributor modul keamanan dan pengujian. Membantu pengembangan fitur bug tool.</div>
+  </div>
+</div>
+
+<!-- ============ BUG TOOL ============ -->
+<div class="page" id="bug">
+  <div class="header">
+    <div class="avatar">🤖</div>
+    <div>
+      <div class="greet">MODUL</div>
+      <div class="name">BUG TOOL</div>
+    </div>
+  </div>
+
+  <div class="section-title">KONFIGURASI</div>
+  <div class="form-group">
+    <label>API ENDPOINT</label>
+    <input type="text" placeholder="https://server-kamu.com">
+  </div>
+  <div class="form-group">
+    <label>TARGET (nomor / link grup)</label>
+    <input type="text" placeholder="628xxxxxxxxxx">
+  </div>
+  <div class="form-group">
+    <label>METODE BUG</label>
+    <select>
+      <option>Freeze Android</option>
+      <option>Crash iOS</option>
+      <option>Blank UI</option>
+      <option>Force Close</option>
+      <option>Call Spam</option>
+      <option>Crash Group</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>JUMLAH</label>
+    <input type="number" placeholder="1" value="1" min="1" max="50">
+  </div>
+  <a class="btn-exec" data-page="bug">EKSEKUSI</a>
+
+  <div class="section-title" style="margin-top:22px;">LOG OUTPUT</div>
+  <div class="log-box">[•] Sistem siap. Menunggu perintah...</div>
+</div>
+
+<!-- ============ PROFILE ============ -->
+<div class="page" id="profile">
+  <div class="header">
+    <div class="avatar">👤</div>
+    <div>
+      <div class="greet">AKUN</div>
+      <div class="name">PROFILE</div>
+    </div>
+  </div>
+
+  <div class="profile-hero">
+    <div class="profile-avatar">⚡</div>
+    <div class="profile-name">KILLUA</div>
+    <div class="profile-role">OWNER · VIP MEMBER</div>
+    <div class="profile-badges">
+      <span class="p-badge gold">👑 PREMIUM</span>
+      <span class="p-badge pink">⚡ PRO</span>
+      <span class="p-badge">✓ VERIFIED</span>
+    </div>
+  </div>
+
+  <div class="profile-stats">
+    <div class="p-stat"><div class="num" style="color:#4da6ff;">128</div><div class="lbl">TOTAL BUG</div></div>
+    <div class="p-stat"><div class="num" style="color:#4dff88;">96%</div><div class="lbl">SUKSES</div></div>
+    <div class="p-stat"><div class="num" style="color:#ff2fa0;">30D</div><div class="lbl">MASA AKTIF</div></div>
+  </div>
+
+  <div class="section-title">INFORMASI AKUN</div>
+  <div class="account-card">
+    <div class="account-row"><span class="k">USERNAME</span><span class="v">KILLUA</span></div>
+    <div class="account-row"><span class="k">DEVELOPER</span><span class="v" style="color:#b366ff;">LEXZY DEV</span></div>
+    <div class="account-row"><span class="k">ACCESS LEVEL</span><span class="v vip-badge">VIP</span></div>
+    <div class="account-row"><span class="k">STATUS</span><span class="v" style="color:#4dff88;">AKTIF</span></div>
+    <div class="account-row"><span class="k">BERGABUNG</span><span class="v">01-01-2026</span></div>
+  </div>
+
+  <div class="section-title cyan">CHAT ADMIN</div>
+  <a class="tg-card" href="https://t.me/Lexzy_real" target="_blank">
+    <div class="tg-ico">✈️</div>
+    <div class="tg-info">
+      <div class="tg-label">HUBUNGI ADMIN</div>
+      <div class="tg-title">Lexzy Dev</div>
+      <div class="tg-user">@Lexzy_real</div>
+    </div>
+    <div class="tg-btn">CHAT</div>
+  </a>
+
+  <div class="section-title" style="margin-top:22px;">BIO</div>
+  <div class="bio-box">
+    <div class="bio-title">TENTANG SAYA</div>
+    <div class="bio-text">Pengguna VIP panel Killua. Developer resmi: <b style="color:#b366ff;">Lexzy Dev</b>. Fokus pada pengujian keamanan dan otomasi.</div>
+  </div>
+</div>
+
+<!-- ============ VIP ============ -->
+<div class="page" id="vip">
+  <div class="header">
+    <div class="avatar gold">👑</div>
+    <div>
+      <div class="greet gold">MEMBER</div>
+      <div class="name">VIP ACCESS</div>
+    </div>
+  </div>
+
+  <div class="vip-banner">
+    <div class="vip-crown">👑</div>
+    <div class="vip-title">KILLUA VIP</div>
+    <div class="vip-sub">UPGRADE UNTUK AKSES PENUH</div>
+  </div>
+
+  <div class="section-title gold">DAFTAR PAKET</div>
+
+  <div class="paket">
+    <div class="paket-head">
+      <div class="paket-name purple">BASIC</div>
+      <div class="paket-price"><div class="harga">Rp 10K</div><div class="durasi">7 HARI</div></div>
+    </div>
+    <ul class="paket-fitur">
+      <li>Akses Bug Tool dasar</li>
+      <li>Metode Freeze &amp; Blank UI</li>
+      <li>Limit 10 eksekusi/hari</li>
+      <li class="no">Crash iOS &amp; Call Spam</li>
+      <li class="no">Priority support</li>
+    </ul>
+    <a class="btn-beli" data-page="vip">PILIH PAKET</a>
+  </div>
+
+  <div class="paket populer">
+    <div class="paket-head">
+      <div class="paket-name gold">PREMIUM</div>
+      <div class="paket-price"><div class="harga">Rp 25K</div><div class="durasi">30 HARI</div></div>
+    </div>
+    <ul class="paket-fitur">
+      <li>Semua metode bug terbuka</li>
+      <li>Limit 50 eksekusi/hari</li>
+      <li>Akses Crash iOS &amp; Call Spam</li>
+      <li>Priority support</li>
+      <li>Badge PREMIUM di profil</li>
+    </ul>
+    <a class="btn-beli gold" data-page="vip">PILIH PAKET</a>
+  </div>
+
+  <div class="paket">
+    <div class="paket-head">
+      <div class="paket-name pink">LIFETIME</div>
+      <div class="paket-price"><div class="harga">Rp 75K</div><div class="durasi">SELAMANYA</div></div>
+    </div>
+    <ul class="paket-fitur">
+      <li>Semua metode bug terbuka</li>
+      <li>Unlimited eksekusi</li>
+      <li>Akses fitur baru lebih awal</li>
+      <li>Priority support 24/7</li>
+      <li>Badge LIFETIME + LEXZY DEV</li>
+    </ul>
+    <a class="btn-beli" data-page="vip">PILIH PAKET</a>
+  </div>
+
+  <div class="vip-info" style="margin-top:20px;">
+    <div class="info-title">INFORMASI PEMBAYARAN</div>
+    <div class="info-text">Hubungi <b>Lexzy Dev</b> di Telegram <b>@Lexzy_real</b> untuk pembayaran via <b>DANA / OVO / GOPAY / QRIS</b>. Setelah pembayaran, akses VIP aktif maksimal 5 menit.</div>
+  </div>
+
+  <div class="section-title cyan">CHAT ADMIN</div>
+  <a class="tg-card" href="https://t.me/Lexzy_real" target="_blank">
+    <div class="tg-ico">✈️</div>
+    <div class="tg-info">
+      <div class="tg-label">TELEGRAM</div>
+      <div class="tg-title">Lexzy Dev</div>
+      <div class="tg-user">@Lexzy_real</div>
+    </div>
+    <div class="tg-btn">CHAT</div>
+  </a>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<div class="page" id="admin">
+  <div class="header">
+    <div class="avatar gold">👑</div>
+    <div>
+      <div class="greet gold">ADMIN PANEL</div>
+      <div class="name">LEXZY DEV</div>
+    </div>
+  </div>
+
+  <div class="main-card gold">
+    <span class="online-badge gold"><span class="dot"></span>ADMIN ONLINE</span>
+    <div class="session-label">ADMIN SESSION</div>
+    <div class="session-ver">V1.00</div>
+    <div class="stats">
+      <div class="stat"><div class="lbl">TOTAL USERS</div><div class="val gold">0</div></div>
+      <div class="stat"><div class="lbl">AKTIF</div><div class="val green">0</div></div>
+      <div class="stat"><div class="lbl">BANNED</div><div class="val pink">0</div></div>
+    </div>
+  </div>
+
+  <div class="section-title gold">BUAT STORY</div>
+  <div class="story-form">
+    <label style="font-size:11px; letter-spacing:1px; color:#8a7aa8; font-weight:700; margin-bottom:6px; display:block;">ISI STORY</label>
+    <textarea id="storyText" placeholder="Tulis story kamu di sini..."></textarea>
+    <label style="font-size:11px; letter-spacing:1px; color:#8a7aa8; font-weight:700; margin:12px 0 6px; display:block;">WARNA BACKGROUND</label>
+    <div class="bg-picker" id="bgPicker">
+      <div class="bg-pick active" data-bg="linear-gradient(135deg,#2a0d4d,#4a0d8c)"></div>
+      <div class="bg-pick" data-bg="linear-gradient(135deg,#0d3a4a,#0d4a8c)"></div>
+      <div class="bg-pick" data-bg="linear-gradient(135deg,#4a0d0d,#8c0d4a)"></div>
+      <div class="bg-pick" data-bg="linear-gradient(135deg,#4a350d,#8c6a0d)"></div>
+      <div class="bg-pick" data-bg="linear-gradient(135deg,#0d4a0d,#0d8c4a)"></div>
+      <div class="bg-pick" data-bg="linear-gradient(135deg,#1a1a1a,#4a4a4a)"></div>
+    </div>
+    <button class="story-btn" onclick="postStory()">POST STORY</button>
+    <button class="story-del" onclick="clearStory()">HAPUS SEMUA STORY</button>
+  </div>
+
+  <div class="section-title cyan">CHAT OWNER</div>
+  <a class="tg-card" href="https://t.me/Lexzy_real" target="_blank">
+    <div class="tg-ico">✈️</div>
+    <div class="tg-info">
+      <div class="tg-label">OWNER TELEGRAM</div>
+      <div class="tg-title">Lexzy Dev</div>
+      <div class="tg-user">@Lexzy_real</div>
+    </div>
+    <div class="tg-btn">CHAT</div>
+  </a>
+
+  <div class="section-title gold">DAFTAR USER</div>
+  <div class="table-user">
+    <div class="user-row">
+      <div class="u-avatar">⚡</div>
+      <div class="u-info"><div class="u-name">KILLUA</div><div class="u-meta">VIP · 30 Hari</div></div>
+      <div class="u-status aktif">AKTIF</div>
+    </div>
+    <div class="user-row">
+      <div class="u-avatar">👤</div>
+      <div class="u-info"><div class="u-name">LEXZY DEV</div><div class="u-meta">ADMIN · Owner</div></div>
+      <div class="u-status aktif">AKTIF</div>
+    </div>
+    <div class="user-row">
+      <div class="u-avatar">👤</div>
+      <div class="u-info"><div class="u-name">USER001</div><div class="u-meta">BASIC · 7 Hari</div></div>
+      <div class="u-status pending">PENDING</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STORY VIEWER (FULLSCREEN) ============ -->
+<div class="story-viewer" id="storyViewer">
+  <div class="story-progress" id="storyProgress"></div>
+  <div class="story-head">
+    <div class="av" id="storyViewerAv">👑</div>
+    <div class="info">
+      <div class="u" id="storyViewerUser">Lexzy Dev</div>
+      <div class="t" id="storyViewerTime">Baru saja</div>
+    </div>
+    <div class="close" onclick="closeStory()">✕</div>
+  </div>
+  <div class="story-content" id="storyViewerContent">
+    <div class="text" id="storyViewerText">Story kamu di sini</div>
+  </div>
+</div>
+
+<!-- ============ MUSIC PLAYER ============ -->
+<audio id="bgMusic" loop>
+  <source src="https://files.catbox.moe/bgl1sz.mp3" type="audio/mpeg">
+</audio>
+
+<div class="music-btn paused" id="musicBtn" title="Play / Pause Musik">
+  <div class="bars">
+    <span></span><span></span><span></span><span></span>
+  </div>
+</div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<div class="bottom-nav">
+  <a class="nav-item active" data-page="home"><span class="ico">🏠</span>HOME</a>
+  <a class="nav-item" data-page="bug"><span class="ico">🤖</span>BUG</a>
+  <a class="nav-item" data-page="profile"><span class="ico">👤</span>PROFILE</a>
+  <a class="nav-item crown" data-page="vip"><span class="ico">👑</span>VIP</a>
+  <a class="nav-item crown" data-page="admin"><span class="ico">🛡️</span>ADMIN</a>
+</div>
+
+<script>
+  /* ===== NAVIGASI ===== */
+  const pages = document.querySelectorAll('.page');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  function showPage(id) {
+    pages.forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    navItems.forEach(n => {
+      n.classList.toggle('active', n.dataset.page === id);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      showPage(el.dataset.page);
+    });
+  });
+
+  showPage('home');
+
+  /* ===== MUSIC PLAYER ===== */
+  const music = document.getElementById('bgMusic');
+  const musicBtn = document.getElementById('musicBtn');
+  let isPlaying = false;
+
+  musicBtn.addEventListener('click', () => {
+    if (isPlaying) {
+      music.pause();
+      musicBtn.classList.add('paused');
+      musicBtn.classList.remove('playing');
+    } else {
+      music.play().then(() => {
+        musicBtn.classList.remove('paused');
+        musicBtn.classList.add('playing');
+      }).catch(err => {
+        console.log('Gagal memutar musik:', err);
+      });
+    }
+    isPlaying = !isPlaying;
+  });
+
+  /* ===== STORY ===== */
+  const STORAGE_KEY = 'killua_stories_v1';
+  let selectedBg = 'linear-gradient(135deg,#2a0d4d,#4a0d8c)';
+
+  // Bg picker
+  document.querySelectorAll('.bg-pick').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.bg-pick').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      selectedBg = el.dataset.bg;
+    });
+  });
+
+  // Get stories
+  function getStories() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  // Save stories
+  function saveStories(arr) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+  }
+
+  // Render story bar di HOME
+  function renderStoryBar() {
+    const bar = document.getElementById('storyBar');
+    if (!bar) return;
+    const stories = getStories();
+    let html = '';
+
+    // Tombol tambah story (kalau lagi di HP admin, buka admin)
+    html += `
+      <div class="story-item" data-page="admin">
+        <div class="story-ring add">
+          <div class="story-inner">+</div>
+        </div>
+        <div class="story-name">Buat Story</div>
+      </div>
+    `;
+
+    stories.forEach((s, i) => {
+      const timeStr = formatTime(s.time);
+      html += `
+        <div class="story-item" onclick="openStory(${i})">
+          <div class="story-ring">
+            <div class="story-inner" style="background:${s.bg}">👑</div>
+          </div>
+          <div class="story-name">Lexzy Dev</div>
+        </div>
+      `;
+    });
+
+    if (stories.length === 0) {
+      html += `
+        <div class="story-item" style="opacity:0.5;">
+          <div class="story-ring seen">
+            <div class="story-inner">📭</div>
+          </div>
+          <div class="story-name">Kosong</div>
+        </div>
+      `;
+    }
+
+    bar.innerHTML = html;
+
+    // Re-attach nav handler ke elemen baru
+    bar.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage(el.dataset.page);
+      });
+    });
+  }
+
+  // Format waktu
+  function formatTime(ts) {
+    const diff = Date.now() - ts;
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'Baru saja';
+    if (m < 60) return m + ' menit lalu';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + ' jam lalu';
+    return Math.floor(h / 24) + ' hari lalu';
+  }
+
+  // Post story
+  function postStory() {
+    const text = document.getElementById('storyText').value.trim();
+    if (!text) {
+      alert('Tulis dulu story-nya!');
+      return;
+    }
+    const stories = getStories();
+    stories.unshift({
+      text: text,
+      bg: selectedBg,
+      time: Date.now()
+    });
+    saveStories(stories);
+    document.getElementById('storyText').value = '';
+    renderStoryBar();
+    alert('Story berhasil dipost!');
+  }
+
+  // Hapus semua story
+  function clearStory() {
+    if (!confirm('Yakin mau hapus semua story?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    renderStoryBar();
+    alert('Semua story dihapus.');
+  }
+
+  // Buka story viewer
+  function openStory(index) {
+    const stories = getStories();
+    if (!stories[index]) return;
+    const s = stories[index];
+
+    document.getElementById('storyViewerText').textContent = s.text;
+    document.getElementById('storyViewerText').style.background = s.bg;
+    document.getElementById('storyViewerContent').style.background = s.bg;
+    document.getElementById('storyViewerTime').textContent = formatTime(s.time);
+
+    // Progress bar
+    const prog = document.getElementById('storyProgress');
+    prog.innerHTML = '';
+    for (let i = 0; i < stories.length; i++) {
+      const b = document.createElement('div');
+      b.className = 'bar' + (i === index ? ' active' : '');
+      b.innerHTML = '<div class="fill"></div>';
+      prog.appendChild(b);
+    }
+
+    document.getElementById('storyViewer').classList.add('open');
+
+    // Auto close setelah 5 detik
+    clearTimeout(window.storyTimer);
+    window.storyTimer = setTimeout(() => {
+      closeStory();
+    }, 5000);
+  }
+
+  function closeStory() {
+    document.getElementById('storyViewer').classList.remove('open');
+    clearTimeout(window.storyTimer);
+  }
+
+  renderStoryBar();
+</script>
+
+</body>
+</html>
